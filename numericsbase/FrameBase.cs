@@ -32,18 +32,23 @@ namespace numericsbase
             set
             {
 
-                var row = (from r in tdata.Rows.Cast<DataRow>()
+                var row = (from r in tdata.AsEnumerable()
                           where r.Field<TIndex>("index").Equals(i)
                           select r).ToList<DataRow>();
 
                 row.First()[column] = value;                
             }
         }
+        
         DataRow newrow()
         {
             return tdata.NewRow();
         }
         
-        protected DataTable tdata;        
+        protected DataTable tdata;    
+        private IEnumerable<DataRow> getRange(Func<TIndex,bool> pred, IEnumerable<string> columns)
+        {
+            return from r in tdata.AsEnumerable() where pred(r.Field<TIndex>("index")) select r;
+        }    
     }
 }
