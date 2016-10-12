@@ -64,8 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrameBase.cs" />
-    <Compile Include="montecarlo.cs" />
-    <Compile Include="simcube.cs" />
+    <Compile Include="montecarlo\SimulationCube.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

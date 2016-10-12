@@ -75,7 +75,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="montecarlotest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
