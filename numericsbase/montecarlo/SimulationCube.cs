@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics.Distributions;
+using MathNet.Numerics.LinearAlgebra;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using numericsbase.utils;
 
 namespace numericsbase.montecarlo
 {
@@ -17,7 +20,7 @@ namespace numericsbase.montecarlo
 
         public enum DISTRIBUTION { UNIFORM=0,NORMAL}
         /// <summary>
-        /// 
+        /// Generates a simulation cube of uniform or normal distributed samples
         /// </summary>
         /// <param name="nsims"> total number of simulations to be generated</param>
         /// <param name="dimension"> Dimensionality of the random vectos to be used</param>
@@ -83,9 +86,38 @@ namespace numericsbase.montecarlo
 
         public void CorrelateSimulationCube(MathNet.Numerics.LinearAlgebra.Matrix<double> Rho)
         {
-            var cholesky = Rho.Cholesky().Factor;
+            Matrix<double> cholesky = Rho.Cholesky().Factor;
 
+            Action<UInt64, UInt64> pfunc = (i,k) =>
+              {
+                  double[] s = new double[number_of_dims];
+                  for (UInt64 j = 0; j < number_of_dims; ++j)
+                  {
+                      s[j] = this[i, j, k];
+                  }
 
+                  s = (cholesky * Vector<double>.Build.Dense(s)).ToArray();
+
+                  for (UInt64 j = 0; j < number_of_dims; ++j)
+                  {
+                      this[i, j, k] = s[j];
+                  }
+                  
+              };
+
+            using (WorkConsumer consumer = new utils.WorkConsumer(System.Environment.ProcessorCount - 1))//
+            {
+                for (UInt64 i = 0; i < number_of_sims; ++i)
+                {
+                    for (UInt64 k = 0; k < number_of_steps; ++k)
+                    {
+                        UInt64 locali = i;
+                        UInt64 localk = k;
+                        consumer.Enqueue(() => pfunc(locali, localk));
+                    }
+                }
+                consumer.waitforEmptyQueue();
+            }
         }
 
         public double[] this[UInt64 simulation,UInt64 dimension]
@@ -94,7 +126,9 @@ namespace numericsbase.montecarlo
             {                                         
                 return array[simulation][dimension];                                   
             }
-            private set { }
+            private set {
+                array[simulation][dimension] = value;
+            }
         }
 
         public double[][] this[UInt64 simulation]
@@ -103,7 +137,9 @@ namespace numericsbase.montecarlo
             {               
                 return array[simulation];
             }
-            private set { }
+            private set {
+                array[simulation] = value;
+            }
         }
 
         public double this[UInt64 simulation,UInt64 dimension,UInt64 step]
@@ -112,7 +148,9 @@ namespace numericsbase.montecarlo
             {
                 return array[simulation][dimension][step];
             }
-            private set { }
+            private set {
+                array[simulation][dimension][step] = value;
+            }
         }
 
 

@@ -66,6 +66,7 @@
     <Compile Include="FrameBase.cs" />
     <Compile Include="montecarlo\SimulationCube.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="utils\WorkConsumer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
