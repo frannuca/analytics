@@ -67,6 +67,7 @@
     <Compile Include="montecarlo\SimulationCube.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="utils\HierarchyTree.cs" />
+    <Compile Include="utils\SNode.cs" />
     <Compile Include="utils\WorkConsumer.cs" />
   </ItemGroup>
   <ItemGroup>
