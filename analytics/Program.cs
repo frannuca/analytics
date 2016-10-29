@@ -21,23 +21,7 @@ namespace Analytics
         {
 
         
-            Node<int> root = new Node<int>(null);
-
-            root.data = 1;
-            root.children.Add(new Node<int>(root));
-            root.children.Last().data = 2;
-
-            root.children.First().children.Add(new Node<int>(root.children.First()));
-            root.children.First().children.Last().data = 3;
-
-            System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(typeof(Node<int>));
-            StringWriter stringwriter = new StringWriter();
-
-            x.Serialize(stringwriter, root);
-            var xmlstr = stringwriter.ToString();
-
-
-            var a = x.Deserialize(new StringReader(xmlstr));
+          
 
 
             double szsim = nsims * nassets * ntimes * sizeof(double)/1024/1024;//MB

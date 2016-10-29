@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,32 +11,72 @@ using System.Xml.Serialization;
 
 namespace numericsbase.utils
 {
+    /// <summary>
+    /// Node base structure to construct tree graph.
+    /// This graph associated to each node a parent, children and a generic data structure.
+    /// The associated generic data type, must be support by xml serialization.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [XmlRoot( ElementName = "Root")]
-
-    public class Node<T>: IXmlSerializable
+    public class Node<T>: IXmlSerializable, ICloneable
     {
-        public Node()
+
+        public Node() { }
+        /// <summary>
+        /// Base ctor. Create an object with automatic uuid and empty list of children and null parent
+        /// </summary>
+        public Node(string name_)
         {
             uuid = Guid.NewGuid().ToString();
-            children = new List<Node<T>>();                      
+            children = new List<Node<T>>();
+            name = name_;                
         }
 
-        public Node(Node<T> parent_): this()
+        /// <summary>
+        /// Create a node with a given parent, uuuid and empty list of children
+        /// </summary>
+        /// <param name="parent_">Parent Node</param>
+        public Node(string name,Node<T> parent_): this(name)
         {
             parent = parent_;
             children = new List<Node<T>>();
         }
 
-        public Node(Node<T> parent, IEnumerable<Node<T>> children_) : this(parent)
+        /// <summary>
+        /// Creates a Node with given parent and children uuid.
+        /// </summary>
+        /// <param name="parent">Parent node</param>
+        /// <param name="children_">Children list</param>
+        public Node(string name,Node<T> parent, IEnumerable<Node<T>> children_) : this(name,parent)
         {
             children = new List<Node<T>>(children);
         }
 
+        /// <summary>
+        /// Unique identifier of the node.
+        /// </summary>
         public string uuid { get; private set; }
+
+
+        public string name { get; private set; }
+        /// <summary>
+        /// Parent node
+        /// </summary>
         public Node<T> parent{ get; private set; }
+
+        /// <summary>
+        /// Children list
+        /// </summary>
         public List<Node<T>> children { get; set; }
+
+        /// <summary>
+        /// Custom Data object
+        /// </summary>
         public T data { get;  set; }
 
+        /// <summary>
+        /// 0-based node level starting from the root node
+        /// </summary>
         public int depth
         {
             get
@@ -84,6 +125,13 @@ namespace numericsbase.utils
         {
             return uuid.GetHashCode();
         }
+
+        /// <summary>
+        /// Equality for two nodes is perform by comparison of their uuid
+        /// </summary>
+        /// <param name="obj1"></param>
+        /// <param name="obj2"></param>
+        /// <returns></returns>
         public static bool operator ==(Node<T> obj1, Node<T> obj2)
         {
             if (ReferenceEquals(obj1, obj2))
@@ -99,17 +147,26 @@ namespace numericsbase.utils
             {
                 return false;
             }
-
+            
             return  obj1.uuid==obj2.uuid;
         }
 
-        // this is second one '!='
+        /// <summary>
+        /// Equality of two nodes is resolver using their internal uuids
+        /// </summary>
+        /// <param name="obj1"></param>
+        /// <param name="obj2"></param>
+        /// <returns></returns>
         public static bool operator !=(Node<T> obj1, Node<T> obj2)
         {
             return !(obj1 == obj2);
         }
 
-
+        /// <summary>
+        /// Equality of two nodes is resolverd using their internal uuids.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public bool Equals(Node<T> node)
         {
             if (ReferenceEquals(node, null))
@@ -144,7 +201,11 @@ namespace numericsbase.utils
             return null;
         }
 
-       
+       /// <summary>
+       /// Serializes this object into xml.
+       /// The underlying data structure is a flat tree, using the type SNode
+       /// </summary>
+       /// <param name="reader"></param>
         public void ReadXml(XmlReader reader)
         {
 
@@ -172,7 +233,7 @@ namespace numericsbase.utils
             var tnodes = new List<Node<T>>();
             foreach(var tn in listnodes)
             {
-                var x = new Node<T>();
+                var x = new Node<T>(tn.name);
                 x.uuid = tn.uuid;
                 x.data = tn.data;
 
@@ -190,7 +251,7 @@ namespace numericsbase.utils
                 tn.children = (from r in tnodes where r.parent != null && r.parent.uuid == tn.uuid select r).ToArray().ToList();
             }
 
-
+            this.name = tnodes.First().name;
             this.uuid = tnodes.First().uuid;
             this.parent = tnodes.First().parent;
             this.children = tnodes.First().children;
@@ -223,6 +284,45 @@ namespace numericsbase.utils
             writer.WriteEndElement();
 
          
+        }
+
+
+        public bool HierarchyEquals(Node<T> obj, Func<T,T,bool> dataComparator)
+        {
+            var thislist = from r in  Breadth_first_search() select new SNode<T>(r);
+            var thatlist = from r in obj.Breadth_first_search() select new SNode<T>(r);
+
+            foreach (var o in thislist.Zip(thatlist,(a,b)=>new KeyValuePair<SNode<T>,SNode<T>>(a,b)))
+            {
+                if((o.Key.uuid != o.Value.uuid) ||
+                   (o.Key.parent != o.Value.parent) ||
+                   (o.Key.name != o.Value.name) ||
+                   !dataComparator(o.Key.data,o.Value.data)
+                   )
+                {
+                    return false;
+                }
+                foreach(var n in o.Key.children.Zip(o.Value.children,(a,b)=> new KeyValuePair<string, string>(a, b))){
+                    if(n.Key != n.Value)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+
+        
+        public object Clone()
+        {
+            var root = this;
+            XmlSerializer x = new XmlSerializer(typeof(Node<T>));
+            StringWriter stringwriter = new StringWriter();
+            x.Serialize(stringwriter, root);
+            var xmlstr = stringwriter.ToString();
+            return x.Deserialize(new StringReader(xmlstr));
         }
     }
 

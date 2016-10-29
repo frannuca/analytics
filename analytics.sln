@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "analytics", "Analytics\analytics.csproj", "{9965FAD7-ABDD-477A-9562-7DEADBDF67C7}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -11,6 +11,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "numericsbase", "numericsbase\numericsbase.csproj", "{1D9594BB-9273-4BBA-9B6C-4E5F8838B190}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "numericsbasetest", "numericsbasetest\numericsbasetest.csproj", "{33595B55-7500-4F60-967D-104F67448E10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalyticsTest", "AnalyticsTest\AnalyticsTest.csproj", "{820413A7-4E5B-4556-A271-5E8C034B2A5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,14 @@ Global
 		{33595B55-7500-4F60-967D-104F67448E10}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33595B55-7500-4F60-967D-104F67448E10}.Release|x64.ActiveCfg = Release|x64
 		{33595B55-7500-4F60-967D-104F67448E10}.Release|x64.Build.0 = Release|x64
+		{820413A7-4E5B-4556-A271-5E8C034B2A5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{820413A7-4E5B-4556-A271-5E8C034B2A5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{820413A7-4E5B-4556-A271-5E8C034B2A5B}.Debug|x64.ActiveCfg = Debug|x64
+		{820413A7-4E5B-4556-A271-5E8C034B2A5B}.Debug|x64.Build.0 = Debug|x64
+		{820413A7-4E5B-4556-A271-5E8C034B2A5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{820413A7-4E5B-4556-A271-5E8C034B2A5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{820413A7-4E5B-4556-A271-5E8C034B2A5B}.Release|x64.ActiveCfg = Release|Any CPU
+		{820413A7-4E5B-4556-A271-5E8C034B2A5B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
