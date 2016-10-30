@@ -52,6 +52,7 @@ namespace numericsbase.utils
             children = new List<Node<T>>(children);
         }
 
+       
         /// <summary>
         /// Unique identifier of the node.
         /// </summary>
@@ -67,7 +68,7 @@ namespace numericsbase.utils
         /// <summary>
         /// Children list
         /// </summary>
-        public List<Node<T>> children { get; set; }
+        public List<Node<T>> children { get; private set; }
 
         /// <summary>
         /// Custom Data object
@@ -93,16 +94,75 @@ namespace numericsbase.utils
             }
             private set { }
         }
+
+/// <summary>
+/// Depth first search algorithm. This function calculates back edges and transversal edges as well.
+/// In the case of trees, the back edges and transversal edges lists need to be empty.
+/// </summary>
+/// <param name="backedges">List of back edges denoting a that the tree is no forward only, hence not a tree</param>
+/// <param name="transversaledges">List of edges conecting nodes at the same level</param>
+/// <returns>Returns the sequence of nodes follow depth first order.</returns>
+        public List<Node<T>> Depth_first_search(out List<Node<T>> backedges,out List<Node<T>> transversaledges)
+        {
+
+            backedges = new List<Node<T>>();
+            transversaledges = new List<Node<T>>();
+
+            var S = new Stack<Node<T>>();
+            S.Push(this);
+
+            var discovered = new List<Node<T>>();
+            
+
+            while (S.Count > 0)
+            {
+                var current = S.Pop();
+                if (!discovered.Contains(current))
+                {
+                    foreach (var n in current.children)
+                    {
+                        S.Push(n);
+                        if (n.depth < current.depth)
+                        {
+                            backedges.Add(n);
+                        }
+                        else if (n.depth == current.depth)
+                        {
+                            transversaledges.Add(n);
+                        }
+                    }
+                    discovered.Add(current);
+                    
+                }
+
+            }
+
+            return discovered;
+        }
+
+        public void AddChildren(params Node<T>[] items)
+        {
+
+            children.AddRange(items);
+            var backedges = new List<Node<T>>();
+            var transdeges = new List<Node<T>>();
+            var aux = Depth_first_search(out backedges, out transdeges);
+            if(backedges.Count>0 || transdeges.Count > 0)
+            {
+                throw new Exception("The obtained graph is not a tree");
+            }
+           
+        }
         
         public IList<Node<T>> Breadth_first_search()
-        {
+        {            
             List<Node<T>> visited = new List<Node<T>>();
 
             Queue<Node<T>> queue = new Queue<Node<T>>();
             queue.Enqueue(this);
             
             while (queue.Count > 0)
-            {
+            {              
                 var current = queue.Dequeue();
                 if (!visited.Contains(current))
                     visited.Add(current);
@@ -115,6 +175,7 @@ namespace numericsbase.utils
                         visited.Add(node);
                     }
                 }
+         
             }
 
             return visited;

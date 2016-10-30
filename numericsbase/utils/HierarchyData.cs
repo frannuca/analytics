@@ -8,7 +8,11 @@ namespace numericsbase.utils
 {
 
     
-    
+    /// <summary>
+    /// Data container containing:
+    /// -A dictionary from key string to a tree graph with associated data for each node.
+    /// - A reverse relation calculation, which for a given node calculates all the associated keys
+    /// </summary>
     public class HierarchyData
     {
 
