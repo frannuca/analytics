@@ -65,6 +65,8 @@
   <ItemGroup>
     <Compile Include="FrameBase.cs" />
     <Compile Include="montecarlo\SimulationCube.cs" />
+    <Compile Include="population\MarkovProcess.cs" />
+    <Compile Include="population\PopulationPMatrix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="utils\HierarchyData.cs" />
     <Compile Include="utils\Node.cs" />
